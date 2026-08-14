@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SMC Analytics & Forward Testing</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Nhúng thư viện Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-gray-900 text-white font-sans">
     <nav class="bg-gray-800 p-4 border-b border-gray-700 flex justify-between items-center">
@@ -17,17 +19,16 @@
     </nav>
 
     <div class="flex flex-col lg:flex-row h-screen p-2 gap-4">
-        <!-- Cột trái: Biểu đồ TradingView -->
+        <!-- Cột trái: Biểu đồ TradingView & Khung Đăng bài -->
         <div class="w-full lg:w-2/3 flex flex-col">
-            <div class="bg-gray-800 rounded-lg p-2 h-[70vh] shadow-lg border border-gray-700">
-                <!-- Bắt đầu TradingView Widget -->
+            <div class="bg-gray-800 rounded-lg p-2 h-[65vh] shadow-lg border border-gray-700">
                 <div class="tradingview-widget-container" style="height:100%;width:100%">
                   <div id="tradingview_7b27f" style="height:calc(100% - 32px);width:100%"></div>
                   <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
                   <script type="text/javascript">
                   new TradingView.widget({
                   "autosize": true,
-                  "symbol": "OANDA:XAGUSD", // Đặt mặc định là Bạc
+                  "symbol": "OANDA:XAGUSD",
                   "interval": "60",
                   "timezone": "Asia/Ho_Chi_Minh",
                   "theme": "dark",
@@ -38,59 +39,186 @@
                   "gridColor": "#374151",
                   "hide_top_toolbar": false,
                   "hide_legend": false,
-                  "save_image": true, // Cho phép chụp ảnh biểu đồ để đăng bài
+                  "save_image": true,
                   "container_id": "tradingview_7b27f",
                   "toolbar_bg": "#1f2937",
-                  "allow_symbol_change": true, // Cho phép người dùng gõ tìm mã khác
-                  "details": true, // Hiện bảng chi tiết giá
-                  "watchlist": [
-                    "OANDA:XAGUSD", // Bạc
-                    "TVC:COPPER",   // Đồng
-                    "TVC:PLATINUM", // Bạch kim
-                    "OANDA:XAUUSD"  // Vàng
-                  ]
+                  "allow_symbol_change": true,
+                  "details": true,
+                  "watchlist": ["OANDA:XAGUSD", "TVC:COPPER", "TVC:PLATINUM", "OANDA:XAUUSD"]
                 });
                   </script>
                 </div>
-                <!-- Kết thúc TradingView Widget -->
             </div>
             
             <div class="mt-4 p-4 bg-gray-800 rounded-lg border border-gray-700 shadow-lg">
                 <h3 class="font-bold mb-2">Đăng nhận định mới</h3>
-                <textarea class="w-full bg-gray-900 border border-gray-700 rounded p-2 text-sm text-gray-200 focus:outline-none focus:border-blue-500" rows="3" placeholder="Chia sẻ góc nhìn của bạn... (Ví dụ: Đã thấy FVG tạo ra sau khi quét thanh khoản phiên Á)"></textarea>
-                <div class="mt-2 flex justify-between items-center">
-                    <button class="text-sm text-gray-400 hover:text-white flex items-center gap-1">
-                        + Kèm Lệnh Forward Test
+                <input type="text" id="input-author" placeholder="Tên hiển thị của bạn (VD: @trader_langson)" class="w-full mb-2 bg-gray-900 border border-gray-700 rounded p-2 text-sm text-gray-200 focus:outline-none focus:border-blue-500">
+                <textarea id="input-content" class="w-full bg-gray-900 border border-gray-700 rounded p-2 text-sm text-gray-200 focus:outline-none focus:border-blue-500" rows="3" placeholder="Chia sẻ góc nhìn của bạn... (Ví dụ: FVG đã được lấp sau nhịp quét thanh khoản)"></textarea>
+                
+                <!-- Khung điền lệnh Forward Test (Mặc định ẩn) -->
+                <div id="forward-test-form" class="mt-2 p-3 bg-gray-900 border border-gray-700 rounded-lg hidden">
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-2 text-sm">
+                        <select id="input-symbol" class="bg-gray-800 border border-gray-700 rounded p-1.5 text-white focus:outline-none">
+                            <option value="XAGUSD">XAGUSD (Bạc)</option>
+                            <option value="XAUUSD">XAUUSD (Vàng)</option>
+                            <option value="COPPER">COPPER (Đồng)</option>
+                        </select>
+                        <select id="input-type" class="bg-gray-800 border border-gray-700 rounded p-1.5 text-white focus:outline-none">
+                            <option value="LONG">LONG</option>
+                            <option value="SHORT">SHORT</option>
+                        </select>
+                        <input type="number" id="input-entry" placeholder="Giá Entry" class="bg-gray-800 border border-gray-700 rounded p-1.5 text-white w-full focus:outline-none">
+                        <input type="number" id="input-sl" placeholder="Stop Loss" class="bg-gray-800 border border-gray-700 rounded p-1.5 text-white w-full focus:outline-none">
+                        <input type="number" id="input-tp" placeholder="Take Profit" class="bg-gray-800 border border-gray-700 rounded p-1.5 text-white w-full focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="mt-3 flex justify-between items-center">
+                    <button onclick="document.getElementById('forward-test-form').classList.toggle('hidden')" class="text-sm text-gray-400 hover:text-white flex items-center gap-1 border border-gray-600 px-3 py-1 rounded">
+                        + Set Lệnh Forward Test
                     </button>
-                    <button class="bg-blue-600 px-4 py-1.5 rounded text-sm hover:bg-blue-500 font-medium transition">Đăng bài</button>
+                    <button id="btn-submit" onclick="submitPost()" class="bg-blue-600 px-6 py-1.5 rounded text-sm hover:bg-blue-500 font-bold transition shadow-lg">ĐĂNG BÀI</button>
                 </div>
             </div>
         </div>
 
-        <!-- Cột phải: Cộng đồng thảo luận & Lệnh mô phỏng -->
+        <!-- Cột phải: Cộng đồng thảo luận (Render từ Supabase) -->
         <div class="w-full lg:w-1/3 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 overflow-y-auto h-[90vh]">
-            <div class="flex justify-between items-center border-b border-gray-700 pb-3 mb-4">
+            <div class="flex justify-between items-center border-b border-gray-700 pb-3 mb-4 sticky top-0 bg-gray-800 z-10">
                 <h2 class="text-lg font-bold">Cộng đồng & Forward Testing</h2>
-                <span class="text-xs bg-green-900 text-green-400 px-2 py-1 rounded">Live</span>
+                <span class="text-xs bg-green-900 text-green-400 px-2 py-1 rounded flex items-center gap-1">
+                    <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span> Live
+                </span>
             </div>
             
-            <!-- Bài đăng mẫu 1 -->
-            <div class="bg-gray-900 p-4 rounded-lg mb-4 border border-gray-700">
-                <div class="flex justify-between items-center mb-2">
-                    <span class="text-sm font-bold text-blue-400">@smart_trader</span>
-                    <span class="text-xs text-gray-500">Vừa xong</span>
-                </div>
-                <p class="text-sm mb-3 text-gray-300 leading-relaxed">Vàng (XAUUSD) vừa quét thanh khoản đỉnh cũ mốc 2450. Chờ giá tạo cấu trúc giảm ở khung 15m để tìm điểm vào lệnh Short.</p>
-                <div class="bg-gray-800 p-3 rounded text-sm border-l-4 border-red-500">
-                    <div class="font-bold text-gray-200 mb-1">Lệnh Forward Test: SHORT XAUUSD</div>
-                    <div class="grid grid-cols-3 gap-2 text-center text-xs mt-2">
-                        <div class="bg-gray-700 py-1 rounded">Entry<br><span class="font-bold text-white">2448.5</span></div>
-                        <div class="bg-red-900 py-1 rounded">SL<br><span class="font-bold text-red-200">2455.0</span></div>
-                        <div class="bg-green-900 py-1 rounded">TP<br><span class="font-bold text-green-200">2420.0</span></div>
-                    </div>
-                </div>
+            <!-- Danh sách bài đăng sẽ được tải vào đây -->
+            <div id="posts-container" class="space-y-4">
+                <div class="text-center text-gray-500 text-sm py-4">Đang tải dữ liệu từ máy chủ...</div>
             </div>
         </div>
     </div>
+
+    <!-- LOGIC KẾT NỐI API -->
+    <script>
+        // MÌNH ĐÃ ĐIỀN SẴN URL CHO BẠN
+        const SUPABASE_URL = 'https://spbiokurzoxupmksraoy.supabase.co';
+        
+        // BẠN CHỈ CẦN DÁN KEY (BẮT ĐẦU BẰNG sb_publishable_...) VÀO GIỮA 2 DẤU NHÁY ĐƠN DƯỚI ĐÂY:
+        const SUPABASE_KEY = 'sb_publishable_SZjk9POzWzoqoZbvoaCSfg_a9btQLym';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // Hàm tải bài viết từ Database
+        async function fetchPosts() {
+            const { data, error } = await supabase
+                .from('posts')
+                .select('*')
+                .order('created_at', { ascending: false });
+            
+            const container = document.getElementById('posts-container');
+            
+            if (error) {
+                container.innerHTML = `<div class="text-center text-red-400 text-sm">Lỗi tải dữ liệu: ${error.message}</div>`;
+                return;
+            }
+            
+            container.innerHTML = ''; // Xóa chữ loading
+            
+            if(data.length === 0) {
+                container.innerHTML = '<div class="text-center text-gray-500 text-sm mt-10">Chưa có nhận định nào. Hãy là người đầu tiên bóc tem!</div>';
+                return;
+            }
+
+            data.forEach(post => {
+                let forwardTestHtml = '';
+                if (post.entry) {
+                    let isLong = post.type === 'LONG';
+                    let typeColor = isLong ? 'border-blue-500' : 'border-red-500';
+                    let badgeColor = isLong ? 'bg-blue-900 text-blue-300' : 'bg-red-900 text-red-300';
+                    
+                    forwardTestHtml = `
+                    <div class="bg-gray-800 p-3 rounded text-sm border-l-4 ${typeColor} mt-3">
+                        <div class="font-bold text-gray-200 mb-1 flex items-center gap-2">
+                            <span class="px-2 py-0.5 rounded text-xs ${badgeColor}">${post.type}</span> 
+                            ${post.symbol}
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 text-center text-xs mt-2">
+                            <div class="bg-gray-700 py-1.5 rounded">Entry<br><span class="font-bold text-white text-sm">${post.entry}</span></div>
+                            <div class="bg-gray-700 py-1.5 rounded">SL<br><span class="font-bold text-red-400 text-sm">${post.sl || '-'}</span></div>
+                            <div class="bg-gray-700 py-1.5 rounded">TP<br><span class="font-bold text-green-400 text-sm">${post.tp || '-'}</span></div>
+                        </div>
+                    </div>`;
+                }
+
+                const dateObj = new Date(post.created_at);
+                const timeStr = dateObj.toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'});
+                const dateStr = dateObj.toLocaleDateString('vi-VN');
+                
+                const postElement = document.createElement('div');
+                postElement.className = 'bg-gray-900 p-4 rounded-lg border border-gray-700 shadow-md';
+                postElement.innerHTML = `
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-bold text-blue-400">${post.author || 'Trader Ẩn Danh'}</span>
+                        <span class="text-xs text-gray-500">${timeStr} - ${dateStr}</span>
+                    </div>
+                    <p class="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">${post.content}</p>
+                    ${forwardTestHtml}
+                `;
+                container.appendChild(postElement);
+            });
+        }
+
+        // Hàm Đăng bài lên Database
+        async function submitPost() {
+            const author = document.getElementById('input-author').value;
+            const content = document.getElementById('input-content').value;
+            const btn = document.getElementById('btn-submit');
+            
+            if(!content.trim()) {
+                alert("Bạn chưa nhập nội dung phân tích!");
+                return;
+            }
+
+            const postData = {
+                author: author || 'Trader Ẩn Danh',
+                content: content
+            };
+
+            const entryVal = document.getElementById('input-entry').value;
+            if (entryVal) {
+                postData.symbol = document.getElementById('input-symbol').value;
+                postData.type = document.getElementById('input-type').value;
+                postData.entry = parseFloat(entryVal);
+                
+                let slVal = document.getElementById('input-sl').value;
+                if(slVal) postData.sl = parseFloat(slVal);
+                
+                let tpVal = document.getElementById('input-tp').value;
+                if(tpVal) postData.tp = parseFloat(tpVal);
+            }
+
+            btn.innerText = 'Đang đẩy lệnh...';
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+
+            const { error } = await supabase.from('posts').insert([postData]);
+
+            btn.innerText = 'ĐĂNG BÀI';
+            btn.disabled = false;
+            btn.classList.remove('opacity-50');
+
+            if (error) {
+                alert("Lỗi khi lưu dữ liệu: " + error.message);
+            } else {
+                document.getElementById('input-content').value = '';
+                document.getElementById('input-entry').value = '';
+                document.getElementById('input-sl').value = '';
+                document.getElementById('input-tp').value = '';
+                fetchPosts();
+            }
+        }
+
+        window.onload = fetchPosts;
+    </script>
 </body>
 </html>
