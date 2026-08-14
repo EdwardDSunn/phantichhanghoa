@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SMC Analytics Pro</title>
+    <title>SMC Analytics Pro - Terminal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -13,7 +13,7 @@
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
         
         .glass-panel {
-            background: rgba(19, 23, 34, 0.7);
+            background: rgba(19, 23, 34, 0.75);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.05);
@@ -49,12 +49,12 @@
         </div>
     </nav>
 
+    <!-- Layout chính: Cột trái Full Biểu đồ, Cột phải Full Cộng đồng & Đăng bài -->
     <div class="flex flex-col lg:flex-row h-[calc(100vh-64px)] p-3 gap-4 overflow-hidden relative z-10">
         
-        <!-- CỘT TRÁI -->
-        <div class="w-full lg:w-2/3 flex flex-col gap-4 h-full overflow-y-auto pr-1 custom-scrollbar">
-            
-            <div class="glass-panel rounded-2xl p-1 h-[55vh] shadow-2xl shrink-0 overflow-hidden group">
+        <!-- CỘT TRÁI: Biểu đồ toàn màn hình -->
+        <div class="w-full lg:w-2/3 flex flex-col h-full">
+            <div class="glass-panel rounded-2xl p-1 h-full shadow-2xl overflow-hidden group">
                 <div class="tradingview-widget-container" style="height:100%;width:100%; border-radius: 12px; overflow: hidden;">
                   <div id="tradingview_7b27f" style="height:calc(100% - 32px);width:100%"></div>
                   <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
@@ -82,77 +82,11 @@
                   </script>
                 </div>
             </div>
-
-            <!-- 2 Mini Widgets -->
-            <div class="grid grid-cols-2 gap-4 shrink-0">
-                <div class="glass-panel rounded-2xl p-1 h-36 shadow-lg overflow-hidden transition hover:border-gray-500/30">
-                    <div class="tradingview-widget-container rounded-xl overflow-hidden">
-                      <div class="tradingview-widget-container__widget"></div>
-                      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
-                      { "symbol": "OANDA:XAUUSD", "width": "100%", "height": "100%", "locale": "vi_VN", "dateRange": "1M", "colorTheme": "dark", "isTransparent": true, "autosize": true, "largeChartUrl": "" }
-                      </script>
-                    </div>
-                </div>
-                <div class="glass-panel rounded-2xl p-1 h-36 shadow-lg overflow-hidden transition hover:border-gray-500/30">
-                    <div class="tradingview-widget-container rounded-xl overflow-hidden">
-                      <div class="tradingview-widget-container__widget"></div>
-                      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
-                      { "symbol": "OANDA:WTICOUSD", "width": "100%", "height": "100%", "locale": "vi_VN", "dateRange": "1M", "colorTheme": "dark", "isTransparent": true, "autosize": true, "largeChartUrl": "" }
-                      </script>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="glass-panel p-5 rounded-2xl shadow-xl relative shrink-0 mb-4">
-                <div id="login-overlay" class="absolute inset-0 bg-[#0B0E14]/60 backdrop-blur-md flex items-center justify-center rounded-2xl z-10">
-                    <div class="text-center transform transition-transform">
-                        <div class="w-16 h-16 mx-auto mb-3 text-gray-500">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                        </div>
-                        <p class="mb-4 text-gray-300 text-sm font-medium">Bảo mật xác thực bắt buộc</p>
-                        <button onclick="toggleAuthModal(true)" class="bg-gradient-to-r from-blue-600 to-cyan-500 px-8 py-2.5 rounded-xl font-bold shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 hover:-translate-y-0.5 transition-all">Ủy quyền Đăng nhập</button>
-                    </div>
-                </div>
-
-                <div class="flex justify-between items-center mb-3">
-                    <h3 class="font-bold text-sm text-gray-100 flex items-center gap-2">
-                        <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                        Tín hiệu giao dịch
-                    </h3>
-                    <span id="posting-as" class="text-[11px] text-gray-400 bg-white/5 px-2 py-1 rounded border border-white/5 font-mono"></span>
-                </div>
-                
-                <textarea id="input-content" class="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-sm text-gray-200 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-all" rows="3" placeholder="Ghi chú logic: FVG, Liquidity sweep, Order Block..."></textarea>
-                
-                <div id="forward-test-form" class="mt-3 p-4 bg-black/30 border border-white/5 rounded-xl hidden">
-                    <div class="grid grid-cols-2 md:grid-cols-5 gap-3 text-sm">
-                        <select id="input-symbol" class="bg-white/5 border border-white/10 rounded-lg p-2 text-white focus:outline-none focus:border-blue-500">
-                            <option value="XAGUSD" class="bg-gray-900">XAGUSD</option>
-                            <option value="XAUUSD" class="bg-gray-900">XAUUSD</option>
-                            <option value="COPPER" class="bg-gray-900">COPPER</option>
-                        </select>
-                        <select id="input-type" class="bg-white/5 border border-white/10 rounded-lg p-2 text-white focus:outline-none focus:border-blue-500">
-                            <option value="LONG" class="bg-gray-900">LONG</option>
-                            <option value="SHORT" class="bg-gray-900">SHORT</option>
-                        </select>
-                        <input type="number" id="input-entry" placeholder="Entry" class="bg-white/5 border border-white/10 rounded-lg p-2 text-white w-full focus:outline-none focus:border-blue-500 font-mono">
-                        <input type="number" id="input-sl" placeholder="Stop Loss" class="bg-white/5 border border-white/10 rounded-lg p-2 text-white w-full focus:outline-none focus:border-blue-500 font-mono">
-                        <input type="number" id="input-tp" placeholder="Take Profit" class="bg-white/5 border border-white/10 rounded-lg p-2 text-white w-full focus:outline-none focus:border-blue-500 font-mono">
-                    </div>
-                </div>
-
-                <div class="mt-4 flex justify-between items-center">
-                    <button onclick="document.getElementById('forward-test-form').classList.toggle('hidden')" class="text-xs text-gray-400 hover:text-white flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1.5 rounded-lg transition hover:bg-white/10">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                        Set Parameters
-                    </button>
-                    <button id="btn-submit" onclick="submitPost()" class="bg-gradient-to-r from-blue-600 to-blue-500 px-8 py-2 rounded-xl text-sm font-bold shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 hover:-translate-y-0.5 transition-all">Tạo Tín Hiệu</button>
-                </div>
-            </div>
         </div>
 
-        <!-- CỘT PHẢI -->
+        <!-- CỘT PHẢI: Feed, Leaderboard & Form Đăng lệnh tích hợp -->
         <div class="w-full lg:w-1/3 glass-panel rounded-2xl shadow-2xl flex flex-col h-full overflow-hidden">
+            <!-- Tabs chuyển đổi -->
             <div class="flex border-b border-white/10 shrink-0 p-1 bg-black/20">
                 <button onclick="switchTab('feed')" id="tab-feed" class="flex-1 py-2.5 mx-1 text-sm font-semibold bg-white/10 text-white rounded-lg transition shadow-sm">
                     Live Feed <span class="ml-1.5 inline-block w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.8)] animate-pulse"></span>
@@ -162,7 +96,8 @@
                 </button>
             </div>
             
-            <div id="content-feed" class="p-3 overflow-y-auto h-full custom-scrollbar">
+            <!-- Nội dung Tab Feed: Danh sách bài đăng -->
+            <div id="content-feed" class="p-3 overflow-y-auto flex-1 custom-scrollbar">
                 <div id="posts-container" class="space-y-3">
                     <div class="animate-pulse flex space-x-4 p-4 bg-white/5 rounded-xl border border-white/5">
                         <div class="flex-1 space-y-4 py-1">
@@ -176,66 +111,79 @@
                 </div>
             </div>
 
-            <div id="content-rank" class="p-3 overflow-y-auto h-full hidden custom-scrollbar">
+            <!-- Nội dung Tab Leaderboard -->
+            <div id="content-rank" class="p-3 overflow-y-auto flex-1 hidden custom-scrollbar">
                 <div class="bg-gradient-to-br from-indigo-900/40 to-purple-900/40 rounded-xl p-5 text-center border border-indigo-500/20 mb-4 shadow-inner">
                     <h4 class="text-indigo-300 font-extrabold mb-1 tracking-wide">TOP ANALYSTS</h4>
                     <p class="text-[11px] text-gray-400">Hệ thống quét TP/SL tự động để cập nhật Winrate</p>
                 </div>
                 
-                <div class="flex items-center justify-between bg-black/30 p-3.5 rounded-xl border border-white/5 mb-3 hover:bg-white/5 transition group cursor-default">
+                <div class="flex items-center justify-between bg-black/30 p-3.5 rounded-xl border border-white/5 mb-3">
                     <div class="flex items-center gap-4">
-                        <span class="text-2xl font-black text-yellow-500 drop-shadow-[0_0_8px_rgba(234,179,8,0.4)]">1</span>
+                        <span class="text-2xl font-black text-yellow-500">1</span>
                         <div>
-                            <div class="text-sm font-bold text-gray-100 group-hover:text-cyan-400 transition">@smart_money_bot</div>
-                            <div class="text-xs text-gray-400 mt-0.5">Winrate: <span class="text-green-400 font-bold">78%</span> <span class="text-[10px]">(50 lệnh)</span></div>
+                            <div class="text-sm font-bold text-gray-100">@smart_money_bot</div>
+                            <div class="text-xs text-gray-400 mt-0.5">Winrate: <span class="text-green-400 font-bold">78%</span></div>
                         </div>
                     </div>
-                    <span class="bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-[10px] px-2.5 py-1 rounded-full font-bold uppercase tracking-wider">Pro</span>
+                    <span class="bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-[10px] px-2.5 py-1 rounded-full font-bold">Pro</span>
+                </div>
+            </div>
+
+            <!-- FORM ĐĂNG BÀI & TÍN HIỆU (Nằm gọn ở đáy cột phải) -->
+            <div class="p-3 border-t border-white/10 bg-black/30 shrink-0 relative">
+                <div id="login-overlay" class="absolute inset-0 bg-[#0B0E14]/80 backdrop-blur-sm flex items-center justify-center z-10 hidden">
+                    <button onclick="toggleAuthModal(true)" class="bg-gradient-to-r from-blue-600 to-cyan-500 px-6 py-2 rounded-xl text-xs font-bold shadow-lg">Đăng nhập để thảo luận</button>
                 </div>
 
-                <div class="flex items-center justify-between bg-black/30 p-3.5 rounded-xl border border-white/5 mb-3 hover:bg-white/5 transition group cursor-default">
-                    <div class="flex items-center gap-4">
-                        <span class="text-xl font-black text-gray-400 drop-shadow-[0_0_8px_rgba(156,163,175,0.4)] ml-1">2</span>
-                        <div>
-                            <div class="text-sm font-bold text-gray-100 group-hover:text-indigo-400 transition">@macro_trader</div>
-                            <div class="text-xs text-gray-400 mt-0.5">Winrate: <span class="text-green-400 font-bold">65%</span> <span class="text-[10px]">(32 lệnh)</span></div>
-                        </div>
+                <textarea id="input-content" class="w-full bg-black/50 border border-white/10 rounded-xl p-2.5 text-xs text-gray-200 focus:outline-none focus:border-cyan-500/50 resize-none" rows="2" placeholder="Chia sẻ nhận định FVG, cấu trúc giá..."></textarea>
+                
+                <div id="forward-test-form" class="mt-2 p-2.5 bg-black/40 border border-white/5 rounded-xl hidden">
+                    <div class="grid grid-cols-3 gap-2 text-xs mb-2">
+                        <select id="input-symbol" class="bg-white/5 border border-white/10 rounded-lg p-1 text-white">
+                            <option value="XAGUSD" class="bg-gray-900">XAGUSD</option>
+                            <option value="XAUUSD" class="bg-gray-900">XAUUSD</option>
+                            <option value="COPPER" class="bg-gray-900">COPPER</option>
+                        </select>
+                        <select id="input-type" class="bg-white/5 border border-white/10 rounded-lg p-1 text-white">
+                            <option value="LONG" class="bg-gray-900">LONG</option>
+                            <option value="SHORT" class="bg-gray-900">SHORT</option>
+                        </select>
+                        <input type="number" id="input-entry" placeholder="Entry" class="bg-white/5 border border-white/10 rounded-lg p-1 text-white font-mono">
                     </div>
-                    <span class="bg-gray-500/10 text-gray-300 border border-gray-500/20 text-[10px] px-2.5 py-1 rounded-full font-bold uppercase tracking-wider">Analyst</span>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <input type="number" id="input-sl" placeholder="Stop Loss" class="bg-white/5 border border-white/10 rounded-lg p-1 text-white font-mono">
+                        <input type="number" id="input-tp" placeholder="Take Profit" class="bg-white/5 border border-white/10 rounded-lg p-1 text-white font-mono">
+                    </div>
+                </div>
+
+                <div class="mt-2 flex justify-between items-center">
+                    <button onclick="document.getElementById('forward-test-form').classList.toggle('hidden')" class="text-[11px] text-gray-400 hover:text-white flex items-center gap-1 bg-white/5 px-2.5 py-1 rounded-lg border border-white/5">
+                        + Lệnh Test
+                    </button>
+                    <button id="btn-submit" onclick="submitPost()" class="bg-gradient-to-r from-blue-600 to-cyan-500 px-5 py-1.5 rounded-lg text-xs font-bold shadow-md hover:opacity-90 transition-all">Đăng Bài</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Modal Auth -->
-    <div id="auth-modal" class="fixed inset-0 bg-[#0B0E14]/80 backdrop-blur-sm hidden items-center justify-center z-50 transition-opacity">
+    <div id="auth-modal" class="fixed inset-0 bg-[#0B0E14]/80 backdrop-blur-sm hidden items-center justify-center z-50">
         <div class="glass-panel p-8 rounded-3xl shadow-2xl w-96 relative border border-white/10">
-            <button onclick="toggleAuthModal(false)" class="absolute top-4 right-4 text-gray-500 hover:text-white bg-white/5 hover:bg-white/10 p-1.5 rounded-full transition">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-            
+            <button onclick="toggleAuthModal(false)" class="absolute top-4 right-4 text-gray-500 hover:text-white">&times;</button>
             <div class="text-center mb-6">
-                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-400 mx-auto mb-3 flex items-center justify-center shadow-lg shadow-blue-500/30">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"></path></svg>
-                </div>
-                <h2 id="auth-title" class="text-2xl font-extrabold tracking-tight">Cổng Ủy Quyền</h2>
+                <h2 id="auth-title" class="text-xl font-extrabold">Xác Thực Tài Khoản</h2>
             </div>
-
             <div class="space-y-4">
-                <div>
-                    <input type="email" id="auth-email" placeholder="Email định danh" class="w-full bg-black/40 border border-white/10 rounded-xl p-3.5 text-sm text-white focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all outline-none">
-                </div>
-                <div>
-                    <input type="password" id="auth-pass" placeholder="Mật khẩu mã hóa" class="w-full bg-black/40 border border-white/10 rounded-xl p-3.5 text-sm text-white focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all outline-none">
-                </div>
-                <button id="btn-auth-action" onclick="handleAuth()" class="w-full bg-gradient-to-r from-blue-600 to-cyan-500 py-3.5 rounded-xl font-bold hover:shadow-[0_0_15px_rgba(6,182,212,0.4)] transition-all mt-2">Truy Cập</button>
+                <input type="email" id="auth-email" placeholder="Email định danh" class="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-sm text-white outline-none focus:border-cyan-500">
+                <input type="password" id="auth-pass" placeholder="Mật khẩu" class="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-sm text-white outline-none focus:border-cyan-500">
+                <button id="btn-auth-action" onclick="handleAuth()" class="w-full bg-gradient-to-r from-blue-600 to-cyan-500 py-3 rounded-xl font-bold">Tiếp Tục</button>
             </div>
-            
-            <div class="mt-6 text-center text-xs text-gray-500">
-                <span id="auth-switch-text">Yêu cầu cấp quyền truy cập mới?</span> 
-                <button onclick="switchAuthMode()" id="auth-switch-btn" class="text-cyan-400 font-bold hover:text-cyan-300 ml-1 transition">Đăng ký</button>
+            <div class="mt-4 text-center text-xs text-gray-400">
+                <span id="auth-switch-text">Chưa có tài khoản?</span> 
+                <button onclick="switchAuthMode()" id="auth-switch-btn" class="text-cyan-400 font-bold ml-1">Đăng ký</button>
             </div>
-            <div id="auth-error" class="mt-4 bg-red-500/10 border border-red-500/20 text-red-400 text-xs p-3 rounded-lg text-center hidden"></div>
+            <div id="auth-error" class="mt-3 bg-red-500/10 text-red-400 text-xs p-2 rounded hidden text-center"></div>
         </div>
     </div>
 
@@ -247,17 +195,14 @@
         let currentUser = null;
         let isLoginMode = true; 
 
-        // ----- AUTH LOGIC -----
         async function checkSession() {
             const { data } = await supabaseClient.auth.getSession();
             if (data.session) {
                 currentUser = data.session.user;
                 document.getElementById('btn-show-login').classList.add('hidden');
                 document.getElementById('user-info').classList.remove('hidden');
-                const nickname = '@' + currentUser.email.split('@')[0];
-                document.getElementById('user-email').innerText = nickname;
+                document.getElementById('user-email').innerText = '@' + currentUser.email.split('@')[0];
                 document.getElementById('login-overlay').classList.add('hidden');
-                document.getElementById('posting-as').innerText = nickname;
             } else {
                 currentUser = null;
                 document.getElementById('btn-show-login').classList.remove('hidden');
@@ -269,27 +214,23 @@
 
         function toggleAuthModal(show) {
             const modal = document.getElementById('auth-modal');
-            show ? (modal.classList.remove('hidden'), modal.classList.add('flex')) : (modal.classList.add('hidden'), modal.classList.remove('flex'), document.getElementById('auth-error').classList.add('hidden'));
+            show ? (modal.classList.remove('hidden'), modal.classList.add('flex')) : (modal.classList.add('hidden'), modal.classList.remove('flex'));
         }
 
         function switchAuthMode() {
             isLoginMode = !isLoginMode;
-            document.getElementById('auth-title').innerText = isLoginMode ? 'Cổng Ủy Quyền' : 'Khởi Tạo Dữ Liệu';
-            document.getElementById('btn-auth-action').innerText = isLoginMode ? 'Truy Cập' : 'Xác Nhận Đăng Ký';
-            document.getElementById('auth-switch-text').innerText = isLoginMode ? 'Yêu cầu cấp quyền truy cập mới?' : 'Đã có định danh hệ thống?';
+            document.getElementById('auth-title').innerText = isLoginMode ? 'Xác Thực Tài Khoản' : 'Đăng Ký Tài Khoản';
+            document.getElementById('btn-auth-action').innerText = isLoginMode ? 'Tiếp Tục' : 'Đăng Ký';
+            document.getElementById('auth-switch-text').innerText = isLoginMode ? 'Chưa có tài khoản?' : 'Đã có tài khoản?';
             document.getElementById('auth-switch-btn').innerText = isLoginMode ? 'Đăng ký' : 'Đăng nhập';
-            document.getElementById('auth-error').classList.add('hidden');
         }
 
         async function handleAuth() {
             const email = document.getElementById('auth-email').value;
             const pass = document.getElementById('auth-pass').value;
             const errorDiv = document.getElementById('auth-error');
-            if(!email || !pass) return errorDiv.innerText = "Thiếu trường dữ liệu bắt buộc.", errorDiv.classList.remove('hidden');
+            if(!email || !pass) return errorDiv.innerText = "Điền thiếu thông tin", errorDiv.classList.remove('hidden');
             
-            document.getElementById('btn-auth-action').innerText = 'Đang xác thực...';
-            errorDiv.classList.add('hidden');
-
             const { error } = isLoginMode 
                 ? await supabaseClient.auth.signInWithPassword({ email, password: pass })
                 : await supabaseClient.auth.signUp({ email, password: pass });
@@ -297,7 +238,6 @@
             if (error) {
                 errorDiv.innerText = error.message;
                 errorDiv.classList.remove('hidden');
-                document.getElementById('btn-auth-action').innerText = isLoginMode ? 'Truy Cập' : 'Xác Nhận Đăng Ký';
             } else {
                 toggleAuthModal(false);
                 checkSession(); 
@@ -306,93 +246,65 @@
 
         async function signOut() { await supabaseClient.auth.signOut(); checkSession(); }
 
-        // ----- TAB LOGIC -----
         function switchTab(tabId) {
             if(tabId === 'feed') {
                 document.getElementById('tab-feed').classList.replace('bg-transparent', 'bg-white/10');
-                document.getElementById('tab-feed').classList.replace('hover:bg-white/5', 'shadow-sm');
-                document.getElementById('tab-feed').classList.replace('text-gray-400', 'text-white');
-                
                 document.getElementById('tab-rank').classList.replace('bg-white/10', 'bg-transparent');
-                document.getElementById('tab-rank').classList.replace('shadow-sm', 'hover:bg-white/5');
-                document.getElementById('tab-rank').classList.replace('text-white', 'text-gray-400');
-                
                 document.getElementById('content-feed').classList.remove('hidden');
                 document.getElementById('content-rank').classList.add('hidden');
             } else {
                 document.getElementById('tab-rank').classList.replace('bg-transparent', 'bg-white/10');
-                document.getElementById('tab-rank').classList.replace('hover:bg-white/5', 'shadow-sm');
-                document.getElementById('tab-rank').classList.replace('text-gray-400', 'text-white');
-                
                 document.getElementById('tab-feed').classList.replace('bg-white/10', 'bg-transparent');
-                document.getElementById('tab-feed').classList.replace('shadow-sm', 'hover:bg-white/5');
-                document.getElementById('tab-feed').classList.replace('text-white', 'text-gray-400');
-                
                 document.getElementById('content-rank').classList.remove('hidden');
                 document.getElementById('content-feed').classList.add('hidden');
             }
         }
 
-        // ----- DATA LOGIC -----
         async function fetchPosts() {
             const { data, error } = await supabaseClient.from('posts').select('*').order('created_at', { ascending: false });
             const container = document.getElementById('posts-container');
-            if (error) return container.innerHTML = `<div class="text-center text-red-400 text-xs bg-red-500/10 p-3 rounded">Lỗi Node: ${error.message}</div>`;
-            if (data.length === 0) return container.innerHTML = '<div class="text-center text-gray-500 text-sm mt-10 font-medium">Radar chưa quét được tín hiệu nào.</div>';
+            if (error) return container.innerHTML = `<div class="text-red-400 text-xs p-2">Lỗi tải dữ liệu</div>`;
+            if (data.length === 0) return container.innerHTML = '<div class="text-center text-gray-500 text-xs mt-6">Chưa có tín hiệu nào.</div>';
 
             container.innerHTML = ''; 
-            data.forEach(post => renderSinglePost(post, container));
-        }
-
-        function renderSinglePost(post, container) {
-            let forwardTestHtml = '';
-            if (post.entry) {
-                let isLong = post.type === 'LONG';
-                let borderGlow = isLong ? 'border-blue-500/50 shadow-[inset_2px_0_10px_rgba(59,130,246,0.1)]' : 'border-pink-500/50 shadow-[inset_2px_0_10px_rgba(236,72,153,0.1)]';
-                let badgeStyle = isLong ? 'bg-blue-500/20 text-blue-400 border-blue-500/30' : 'bg-pink-500/20 text-pink-400 border-pink-500/30';
-                
-                forwardTestHtml = `
-                <div class="bg-black/40 p-3 rounded-xl border-l-2 ${borderGlow} mt-3">
-                    <div class="font-bold text-gray-200 mb-2 flex items-center gap-2">
-                        <span class="px-2 py-0.5 rounded text-[10px] uppercase font-black tracking-wider border ${badgeStyle}">${post.type}</span> 
-                        <span class="text-sm font-mono tracking-tight">${post.symbol}</span>
-                    </div>
-                    <div class="grid grid-cols-3 gap-2 text-center text-xs mt-1">
-                        <div class="bg-white/5 py-1.5 rounded-lg border border-white/5">Entry<br><span class="font-mono font-bold text-white text-sm">${post.entry}</span></div>
-                        <div class="bg-white/5 py-1.5 rounded-lg border border-white/5">SL<br><span class="font-mono font-bold text-pink-400 text-sm">${post.sl || '-'}</span></div>
-                        <div class="bg-white/5 py-1.5 rounded-lg border border-white/5">TP<br><span class="font-mono font-bold text-emerald-400 text-sm">${post.tp || '-'}</span></div>
-                    </div>
-                </div>`;
-            }
-            const dateObj = new Date(post.created_at);
-            const timeStr = dateObj.toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'});
-            
-            const div = document.createElement('div');
-            div.className = 'bg-white/5 p-4 rounded-2xl border border-white/10 shadow-sm hover:border-white/20 transition-colors';
-            div.innerHTML = `
-                <div class="flex justify-between items-center mb-2">
-                    <div class="flex items-center gap-2">
-                        <div class="w-6 h-6 rounded-full bg-gradient-to-tr from-gray-700 to-gray-600 flex items-center justify-center text-[10px] text-white font-bold border border-white/10">
-                            ${post.author.charAt(1).toUpperCase()}
+            data.forEach(post => {
+                let forwardTestHtml = '';
+                if (post.entry) {
+                    let isLong = post.type === 'LONG';
+                    let borderGlow = isLong ? 'border-blue-500/50' : 'border-pink-500/50';
+                    let badgeStyle = isLong ? 'bg-blue-500/20 text-blue-400' : 'bg-pink-500/20 text-pink-400';
+                    forwardTestHtml = `
+                    <div class="bg-black/40 p-2.5 rounded-xl border-l-2 ${borderGlow} mt-2 text-xs">
+                        <div class="font-bold mb-1.5 flex items-center gap-2">
+                            <span class="px-1.5 py-0.5 rounded text-[9px] uppercase font-black ${badgeStyle}">${post.type}</span> 
+                            <span class="font-mono">${post.symbol}</span>
                         </div>
-                        <span class="text-sm font-bold text-gray-200">${post.author}</span>
+                        <div class="grid grid-cols-3 gap-1 text-center">
+                            <div class="bg-white/5 py-1 rounded">Entry<br><span class="font-mono font-bold text-white">${post.entry}</span></div>
+                            <div class="bg-white/5 py-1 rounded">SL<br><span class="font-mono font-bold text-pink-400">${post.sl || '-'}</span></div>
+                            <div class="bg-white/5 py-1 rounded">TP<br><span class="font-mono font-bold text-emerald-400">${post.tp || '-'}</span></div>
+                        </div>
+                    </div>`;
+                }
+                const div = document.createElement('div');
+                div.className = 'bg-white/5 p-3 rounded-xl border border-white/10 text-xs';
+                div.innerHTML = `
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="font-bold text-blue-400">${post.author}</span>
+                        <span class="text-[10px] text-gray-500 font-mono">${new Date(post.created_at).toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'})}</span>
                     </div>
-                    <span class="text-[10px] text-gray-500 font-mono">${timeStr}</span>
-                </div>
-                <p class="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap pl-8">${post.content}</p>
-                <div class="pl-8">
+                    <p class="text-gray-300 leading-relaxed">${post.content}</p>
                     ${forwardTestHtml}
-                </div>
-            `;
-            container.appendChild(div);
+                `;
+                container.appendChild(div);
+            });
         }
 
         async function submitPost() {
             if (!currentUser) return alert("Vui lòng đăng nhập!");
             const content = document.getElementById('input-content').value;
-            if(!content.trim()) return alert("Bạn chưa nhập nội dung!");
+            if(!content.trim()) return alert("Nhập nội dung đi bạn!");
 
-            const btn = document.getElementById('btn-submit');
             const postData = { author: '@' + currentUser.email.split('@')[0], content: content };
             const entryVal = document.getElementById('input-entry').value;
             if (entryVal) {
@@ -403,22 +315,14 @@
                 let tpVal = document.getElementById('input-tp').value; if(tpVal) postData.tp = parseFloat(tpVal);
             }
 
-            btn.innerText = 'Syncing...'; btn.disabled = true;
             await supabaseClient.from('posts').insert([postData]);
-            
-            btn.innerText = 'Tạo Tín Hiệu'; btn.disabled = false;
             document.getElementById('input-content').value = '';
             document.getElementById('input-entry').value = '';
             document.getElementById('input-sl').value = '';
             document.getElementById('input-tp').value = '';
         }
 
-        const postsChannel = supabaseClient.channel('custom-all-channel')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, payload => {
-            fetchPosts();
-        })
-        .subscribe();
-
+        supabaseClient.channel('custom-all-channel').on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, () => fetchPosts()).subscribe();
         window.onload = checkSession;
     </script>
 </body>
