@@ -132,19 +132,18 @@
     </div>
 
     <script>
-        // MÌNH ĐÃ ĐIỀN SẴN URL
         const SUPABASE_URL = 'https://spbiokurzoxupmksraoy.supabase.co';
-        // BẠN DÁN API KEY VÀO ĐÂY GIỐNG LẦN TRƯỚC NHÉ:
         const SUPABASE_KEY = 'sb_publishable_SZjk9POzWzoqoZbvoaCSfg_a9btQLym';
         
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // Đổi tên biến kết nối để không bị trùng với hệ thống
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         
         let currentUser = null;
-        let isLoginMode = true; // true: Đăng nhập, false: Đăng ký
+        let isLoginMode = true; 
 
-        // KIỂM TRA TRẠNG THÁI ĐĂNG NHẬP KHI MỞ WEB
+        // KIỂM TRA TRẠNG THÁI ĐĂNG NHẬP
         async function checkSession() {
-            const { data, error } = await supabase.auth.getSession();
+            const { data, error } = await supabaseClient.auth.getSession();
             if (data.session) {
                 currentUser = data.session.user;
                 updateUIForUser();
@@ -158,11 +157,9 @@
         function updateUIForUser() {
             document.getElementById('btn-show-login').classList.add('hidden');
             document.getElementById('user-info').classList.remove('hidden');
-            // Cắt phần tên trước chữ @ của email để làm nickname
             const nickname = '@' + currentUser.email.split('@')[0];
             document.getElementById('user-email').innerText = nickname;
             
-            // Mở khóa khung đăng bài
             document.getElementById('login-overlay').classList.add('hidden');
             document.getElementById('posting-as').innerText = `Đăng bài dưới tên: ${nickname}`;
         }
@@ -170,7 +167,6 @@
         function updateUIForGuest() {
             document.getElementById('btn-show-login').classList.remove('hidden');
             document.getElementById('user-info').classList.add('hidden');
-            // Khóa khung đăng bài
             document.getElementById('login-overlay').classList.remove('hidden');
         }
 
@@ -212,10 +208,10 @@
 
             let error = null;
             if (isLoginMode) {
-                const res = await supabase.auth.signInWithPassword({ email, password: pass });
+                const res = await supabaseClient.auth.signInWithPassword({ email, password: pass });
                 error = res.error;
             } else {
-                const res = await supabase.auth.signUp({ email, password: pass });
+                const res = await supabaseClient.auth.signUp({ email, password: pass });
                 error = res.error;
             }
 
@@ -225,18 +221,18 @@
                 document.getElementById('btn-auth-action').innerText = isLoginMode ? 'Đăng Nhập' : 'Đăng Ký';
             } else {
                 toggleAuthModal(false);
-                checkSession(); // Cập nhật lại giao diện
+                checkSession(); 
             }
         }
 
         async function signOut() {
-            await supabase.auth.signOut();
+            await supabaseClient.auth.signOut();
             checkSession();
         }
 
-        // TẢI BÀI VIẾT (Giữ nguyên như cũ)
+        // TẢI BÀI VIẾT
         async function fetchPosts() {
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('posts')
                 .select('*')
                 .order('created_at', { ascending: false });
@@ -291,7 +287,7 @@
             });
         }
 
-        // ĐĂNG BÀI (Có kiểm tra Auth)
+        // ĐĂNG BÀI
         async function submitPost() {
             if (!currentUser) {
                 alert("Vui lòng đăng nhập!");
@@ -308,7 +304,7 @@
 
             const nickname = '@' + currentUser.email.split('@')[0];
             const postData = {
-                author: nickname, // Lấy tên từ tài khoản đang đăng nhập
+                author: nickname, 
                 content: content
             };
 
@@ -328,7 +324,7 @@
             btn.innerText = 'Đang đẩy...';
             btn.disabled = true;
 
-            const { error } = await supabase.from('posts').insert([postData]);
+            const { error } = await supabaseClient.from('posts').insert([postData]);
 
             btn.innerText = 'ĐĂNG BÀI';
             btn.disabled = false;
