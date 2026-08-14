@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMC Analytics & Forward Testing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white font-sans">
+    <nav class="bg-gray-800 p-4 border-b border-gray-700 flex justify-between items-center">
+        <div class="text-xl font-bold text-blue-400">Commodity Analytics (SMC)</div>
+        <div class="flex space-x-4 text-sm font-medium">
+            <button class="hover:text-blue-400">Biểu đồ</button>
+            <button class="hover:text-blue-400">Nhật ký Backtest</button>
+            <button class="bg-blue-600 px-4 py-1.5 rounded hover:bg-blue-500 transition">Đăng nhập</button>
+        </div>
+    </nav>
+
+    <div class="flex flex-col lg:flex-row h-screen p-2 gap-4">
+        <!-- Cột trái: Biểu đồ TradingView -->
+        <div class="w-full lg:w-2/3 flex flex-col">
+            <div class="bg-gray-800 rounded-lg p-2 h-[70vh] shadow-lg border border-gray-700">
+                <!-- Bắt đầu TradingView Widget -->
+                <div class="tradingview-widget-container" style="height:100%;width:100%">
+                  <div id="tradingview_7b27f" style="height:calc(100% - 32px);width:100%"></div>
+                  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+                  <script type="text/javascript">
+                  new TradingView.widget({
+                  "autosize": true,
+                  "symbol": "OANDA:XAGUSD", // Đặt mặc định là Bạc
+                  "interval": "60",
+                  "timezone": "Asia/Ho_Chi_Minh",
+                  "theme": "dark",
+                  "style": "1",
+                  "locale": "vi_VN",
+                  "enable_publishing": false,
+                  "backgroundColor": "#1f2937",
+                  "gridColor": "#374151",
+                  "hide_top_toolbar": false,
+                  "hide_legend": false,
+                  "save_image": true, // Cho phép chụp ảnh biểu đồ để đăng bài
+                  "container_id": "tradingview_7b27f",
+                  "toolbar_bg": "#1f2937",
+                  "allow_symbol_change": true, // Cho phép người dùng gõ tìm mã khác
+                  "details": true, // Hiện bảng chi tiết giá
+                  "watchlist": [
+                    "OANDA:XAGUSD", // Bạc
+                    "TVC:COPPER",   // Đồng
+                    "TVC:PLATINUM", // Bạch kim
+                    "OANDA:XAUUSD"  // Vàng
+                  ]
+                });
+                  </script>
+                </div>
+                <!-- Kết thúc TradingView Widget -->
+            </div>
+            
+            <div class="mt-4 p-4 bg-gray-800 rounded-lg border border-gray-700 shadow-lg">
+                <h3 class="font-bold mb-2">Đăng nhận định mới</h3>
+                <textarea class="w-full bg-gray-900 border border-gray-700 rounded p-2 text-sm text-gray-200 focus:outline-none focus:border-blue-500" rows="3" placeholder="Chia sẻ góc nhìn của bạn... (Ví dụ: Đã thấy FVG tạo ra sau khi quét thanh khoản phiên Á)"></textarea>
+                <div class="mt-2 flex justify-between items-center">
+                    <button class="text-sm text-gray-400 hover:text-white flex items-center gap-1">
+                        + Kèm Lệnh Forward Test
+                    </button>
+                    <button class="bg-blue-600 px-4 py-1.5 rounded text-sm hover:bg-blue-500 font-medium transition">Đăng bài</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cột phải: Cộng đồng thảo luận & Lệnh mô phỏng -->
+        <div class="w-full lg:w-1/3 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 overflow-y-auto h-[90vh]">
+            <div class="flex justify-between items-center border-b border-gray-700 pb-3 mb-4">
+                <h2 class="text-lg font-bold">Cộng đồng & Forward Testing</h2>
+                <span class="text-xs bg-green-900 text-green-400 px-2 py-1 rounded">Live</span>
+            </div>
+            
+            <!-- Bài đăng mẫu 1 -->
+            <div class="bg-gray-900 p-4 rounded-lg mb-4 border border-gray-700">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm font-bold text-blue-400">@smart_trader</span>
+                    <span class="text-xs text-gray-500">Vừa xong</span>
+                </div>
+                <p class="text-sm mb-3 text-gray-300 leading-relaxed">Vàng (XAUUSD) vừa quét thanh khoản đỉnh cũ mốc 2450. Chờ giá tạo cấu trúc giảm ở khung 15m để tìm điểm vào lệnh Short.</p>
+                <div class="bg-gray-800 p-3 rounded text-sm border-l-4 border-red-500">
+                    <div class="font-bold text-gray-200 mb-1">Lệnh Forward Test: SHORT XAUUSD</div>
+                    <div class="grid grid-cols-3 gap-2 text-center text-xs mt-2">
+                        <div class="bg-gray-700 py-1 rounded">Entry<br><span class="font-bold text-white">2448.5</span></div>
+                        <div class="bg-red-900 py-1 rounded">SL<br><span class="font-bold text-red-200">2455.0</span></div>
+                        <div class="bg-green-900 py-1 rounded">TP<br><span class="font-bold text-green-200">2420.0</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
