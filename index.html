@@ -3,30 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SMC Analytics & Forward Testing</title>
+    <title>SMC Analytics & Forward Testing Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="bg-gray-900 text-white font-sans relative">
+<body class="bg-gray-900 text-white font-sans relative h-screen overflow-hidden">
     <!-- Navbar -->
-    <nav class="bg-gray-800 p-4 border-b border-gray-700 flex justify-between items-center">
+    <nav class="bg-gray-800 p-3 border-b border-gray-700 flex justify-between items-center shrink-0">
         <div class="text-xl font-bold text-blue-400">Commodity Analytics (SMC)</div>
         <div class="flex space-x-4 text-sm font-medium items-center">
-            <button class="hover:text-blue-400">Biểu đồ</button>
-            <button class="hover:text-blue-400">Nhật ký Backtest</button>
+            <button class="hover:text-blue-400 text-blue-400 border-b-2 border-blue-400 pb-1">Terminal</button>
             <!-- Khu vực User -->
             <div id="user-info" class="hidden flex items-center gap-3">
-                <span id="user-email" class="text-gray-300 font-bold"></span>
-                <button onclick="signOut()" class="text-red-400 hover:text-red-300 text-xs border border-red-500 px-2 py-1 rounded">Thoát</button>
+                <span id="user-email" class="text-gray-300 font-bold bg-gray-700 px-3 py-1 rounded-full text-xs"></span>
+                <button onclick="signOut()" class="text-red-400 hover:text-red-300 text-xs border border-red-500 px-2 py-1 rounded transition">Thoát</button>
             </div>
-            <button id="btn-show-login" onclick="toggleAuthModal(true)" class="bg-blue-600 px-4 py-1.5 rounded hover:bg-blue-500 transition">Đăng nhập</button>
+            <button id="btn-show-login" onclick="toggleAuthModal(true)" class="bg-blue-600 px-4 py-1.5 rounded hover:bg-blue-500 transition shadow-lg">Đăng nhập</button>
         </div>
     </nav>
 
-    <div class="flex flex-col lg:flex-row h-screen p-2 gap-4">
-        <!-- Cột trái -->
-        <div class="w-full lg:w-2/3 flex flex-col">
-            <div class="bg-gray-800 rounded-lg p-2 h-[65vh] shadow-lg border border-gray-700">
+    <div class="flex flex-col lg:flex-row h-[calc(100vh-60px)] p-2 gap-3 overflow-hidden">
+        
+        <!-- CỘT TRÁI: Phân tích Kỹ thuật & Vĩ mô -->
+        <div class="w-full lg:w-2/3 flex flex-col gap-3 h-full overflow-y-auto pr-1 custom-scrollbar">
+            
+            <!-- Biểu đồ chính (TA) -->
+            <div class="bg-gray-800 rounded-lg p-2 h-[55vh] shadow-lg border border-gray-700 shrink-0">
                 <div class="tradingview-widget-container" style="height:100%;width:100%">
                   <div id="tradingview_7b27f" style="height:calc(100% - 32px);width:100%"></div>
                   <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
@@ -54,9 +56,51 @@
                   </script>
                 </div>
             </div>
+
+            <!-- Dữ liệu Vĩ mô (FA) -->
+            <div class="grid grid-cols-2 gap-3 shrink-0">
+                <!-- DXY Widget -->
+                <div class="bg-gray-800 rounded-lg p-2 h-32 border border-gray-700 shadow-lg">
+                    <div class="tradingview-widget-container">
+                      <div class="tradingview-widget-container__widget"></div>
+                      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+                      {
+                      "symbol": "TVC:DXY",
+                      "width": "100%",
+                      "height": "100%",
+                      "locale": "vi_VN",
+                      "dateRange": "1M",
+                      "colorTheme": "dark",
+                      "isTransparent": true,
+                      "autosize": true,
+                      "largeChartUrl": ""
+                    }
+                      </script>
+                    </div>
+                </div>
+                <!-- US10Y Widget -->
+                <div class="bg-gray-800 rounded-lg p-2 h-32 border border-gray-700 shadow-lg">
+                    <div class="tradingview-widget-container">
+                      <div class="tradingview-widget-container__widget"></div>
+                      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+                      {
+                      "symbol": "TVC:US10Y",
+                      "width": "100%",
+                      "height": "100%",
+                      "locale": "vi_VN",
+                      "dateRange": "1M",
+                      "colorTheme": "dark",
+                      "isTransparent": true,
+                      "autosize": true,
+                      "largeChartUrl": ""
+                    }
+                      </script>
+                    </div>
+                </div>
+            </div>
             
-            <div class="mt-4 p-4 bg-gray-800 rounded-lg border border-gray-700 shadow-lg relative">
-                <!-- Overlay chặn nếu chưa đăng nhập -->
+            <!-- Khung Đăng Bài -->
+            <div class="p-4 bg-gray-800 rounded-lg border border-gray-700 shadow-lg relative shrink-0 mb-4">
                 <div id="login-overlay" class="absolute inset-0 bg-gray-900 bg-opacity-80 flex items-center justify-center rounded-lg z-10 backdrop-blur-sm">
                     <div class="text-center">
                         <p class="mb-3 text-gray-300">Vui lòng đăng nhập để chia sẻ nhận định</p>
@@ -64,53 +108,85 @@
                     </div>
                 </div>
 
-                <h3 class="font-bold mb-2 flex justify-between items-center">
-                    <span>Đăng nhận định mới</span>
+                <h3 class="font-bold mb-2 flex justify-between items-center text-sm">
+                    <span class="text-gray-300">Nhật ký giao dịch / Nhận định</span>
                     <span id="posting-as" class="text-xs text-blue-400 font-normal"></span>
                 </h3>
-                <textarea id="input-content" class="w-full bg-gray-900 border border-gray-700 rounded p-2 text-sm text-gray-200 focus:outline-none focus:border-blue-500" rows="3" placeholder="Chia sẻ góc nhìn của bạn..."></textarea>
+                <textarea id="input-content" class="w-full bg-gray-900 border border-gray-700 rounded p-2 text-sm text-gray-200 focus:outline-none focus:border-blue-500" rows="3" placeholder="Ghi chú các vùng FVG, Liquidity sweep..."></textarea>
                 
                 <div id="forward-test-form" class="mt-2 p-3 bg-gray-900 border border-gray-700 rounded-lg hidden">
                     <div class="grid grid-cols-2 md:grid-cols-5 gap-2 text-sm">
                         <select id="input-symbol" class="bg-gray-800 border border-gray-700 rounded p-1.5 text-white focus:outline-none">
-                            <option value="XAGUSD">XAGUSD (Bạc)</option>
-                            <option value="XAUUSD">XAUUSD (Vàng)</option>
-                            <option value="COPPER">COPPER (Đồng)</option>
+                            <option value="XAGUSD">XAGUSD</option>
+                            <option value="XAUUSD">XAUUSD</option>
+                            <option value="COPPER">COPPER</option>
                         </select>
                         <select id="input-type" class="bg-gray-800 border border-gray-700 rounded p-1.5 text-white focus:outline-none">
                             <option value="LONG">LONG</option>
                             <option value="SHORT">SHORT</option>
                         </select>
-                        <input type="number" id="input-entry" placeholder="Giá Entry" class="bg-gray-800 border border-gray-700 rounded p-1.5 text-white w-full focus:outline-none">
+                        <input type="number" id="input-entry" placeholder="Entry" class="bg-gray-800 border border-gray-700 rounded p-1.5 text-white w-full focus:outline-none">
                         <input type="number" id="input-sl" placeholder="Stop Loss" class="bg-gray-800 border border-gray-700 rounded p-1.5 text-white w-full focus:outline-none">
                         <input type="number" id="input-tp" placeholder="Take Profit" class="bg-gray-800 border border-gray-700 rounded p-1.5 text-white w-full focus:outline-none">
                     </div>
                 </div>
 
                 <div class="mt-3 flex justify-between items-center">
-                    <button onclick="document.getElementById('forward-test-form').classList.toggle('hidden')" class="text-sm text-gray-400 hover:text-white flex items-center gap-1 border border-gray-600 px-3 py-1 rounded">
-                        + Set Lệnh Forward Test
+                    <button onclick="document.getElementById('forward-test-form').classList.toggle('hidden')" class="text-sm text-gray-400 hover:text-white flex items-center gap-1 border border-gray-600 px-3 py-1 rounded transition">
+                        + Đính kèm lệnh Test
                     </button>
                     <button id="btn-submit" onclick="submitPost()" class="bg-blue-600 px-6 py-1.5 rounded text-sm hover:bg-blue-500 font-bold transition shadow-lg">ĐĂNG BÀI</button>
                 </div>
             </div>
         </div>
 
-        <!-- Cột phải -->
-        <div class="w-full lg:w-1/3 bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 overflow-y-auto h-[90vh]">
-            <div class="flex justify-between items-center border-b border-gray-700 pb-3 mb-4 sticky top-0 bg-gray-800 z-10">
-                <h2 class="text-lg font-bold">Cộng đồng & Forward Testing</h2>
-                <span class="text-xs bg-green-900 text-green-400 px-2 py-1 rounded flex items-center gap-1">
-                    <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span> Live
-                </span>
+        <!-- CỘT PHẢI: Cộng đồng & Bảng xếp hạng -->
+        <div class="w-full lg:w-1/3 bg-gray-800 rounded-lg shadow-lg border border-gray-700 flex flex-col h-full overflow-hidden">
+            <!-- Tabs -->
+            <div class="flex border-b border-gray-700 shrink-0">
+                <button onclick="switchTab('feed')" id="tab-feed" class="flex-1 py-3 text-sm font-bold bg-gray-700 text-white transition">Cộng Đồng <span class="ml-1 inline-block w-2 h-2 rounded-full bg-green-400 animate-pulse"></span></button>
+                <button onclick="switchTab('rank')" id="tab-rank" class="flex-1 py-3 text-sm font-bold text-gray-400 hover:text-white transition">Bảng Xếp Hạng</button>
             </div>
-            <div id="posts-container" class="space-y-4">
-                <div class="text-center text-gray-500 text-sm py-4">Đang tải dữ liệu...</div>
+            
+            <!-- Nội dung Tab Feed (Real-time) -->
+            <div id="content-feed" class="p-3 overflow-y-auto h-full custom-scrollbar">
+                <div id="posts-container" class="space-y-3">
+                    <div class="text-center text-gray-500 text-sm py-10">Đang đồng bộ dữ liệu...</div>
+                </div>
+            </div>
+
+            <!-- Nội dung Tab Rank -->
+            <div id="content-rank" class="p-3 overflow-y-auto h-full hidden custom-scrollbar">
+                <div class="bg-gray-900 rounded p-4 text-center border border-gray-700 mb-3">
+                    <h4 class="text-yellow-400 font-bold mb-1">Top Analysts Của Tháng</h4>
+                    <p class="text-xs text-gray-400">Hệ thống đang tự động quét SL/TP hàng ngày để cập nhật Winrate.</p>
+                </div>
+                <!-- Mẫu user rank -->
+                <div class="flex items-center justify-between bg-gray-800 p-3 rounded border border-gray-700 mb-2">
+                    <div class="flex items-center gap-3">
+                        <span class="text-xl font-bold text-yellow-500">1</span>
+                        <div>
+                            <div class="text-sm font-bold text-gray-200">@smart_money_bot</div>
+                            <div class="text-xs text-green-400">Winrate: 78% (50 lệnh)</div>
+                        </div>
+                    </div>
+                    <span class="bg-blue-900 text-blue-300 text-xs px-2 py-1 rounded">Pro Trader</span>
+                </div>
+                <div class="flex items-center justify-between bg-gray-800 p-3 rounded border border-gray-700 mb-2">
+                    <div class="flex items-center gap-3">
+                        <span class="text-xl font-bold text-gray-400">2</span>
+                        <div>
+                            <div class="text-sm font-bold text-gray-200">@macro_trader</div>
+                            <div class="text-xs text-green-400">Winrate: 65% (32 lệnh)</div>
+                        </div>
+                    </div>
+                    <span class="bg-gray-700 text-gray-300 text-xs px-2 py-1 rounded">Analyst</span>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal Đăng nhập / Đăng ký -->
+    <!-- Modal Auth -->
     <div id="auth-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-50">
         <div class="bg-gray-800 p-6 rounded-lg shadow-xl border border-gray-700 w-96">
             <div class="flex justify-between items-center mb-4">
@@ -119,8 +195,7 @@
             </div>
             <div class="space-y-3">
                 <input type="email" id="auth-email" placeholder="Email của bạn" class="w-full bg-gray-900 border border-gray-700 rounded p-2 text-white focus:border-blue-500 outline-none">
-                <input type="password" id="auth-pass" placeholder="Mật khẩu (ít nhất 6 ký tự)" class="w-full bg-gray-900 border border-gray-700 rounded p-2 text-white focus:border-blue-500 outline-none">
-                
+                <input type="password" id="auth-pass" placeholder="Mật khẩu" class="w-full bg-gray-900 border border-gray-700 rounded p-2 text-white focus:border-blue-500 outline-none">
                 <button id="btn-auth-action" onclick="handleAuth()" class="w-full bg-blue-600 py-2 rounded font-bold hover:bg-blue-500 mt-2">Đăng Nhập</button>
             </div>
             <div class="mt-4 text-center text-sm text-gray-400">
@@ -131,89 +206,65 @@
         </div>
     </div>
 
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #4B5563; border-radius: 4px; }
+    </style>
+
     <script>
         const SUPABASE_URL = 'https://spbiokurzoxupmksraoy.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_SZjk9POzWzoqoZbvoaCSfg_a9btQLym';
-        
-        // Đổi tên biến kết nối để không bị trùng với hệ thống
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         
         let currentUser = null;
         let isLoginMode = true; 
 
-        // KIỂM TRA TRẠNG THÁI ĐĂNG NHẬP
+        // ----- AUTH LOGIC -----
         async function checkSession() {
-            const { data, error } = await supabaseClient.auth.getSession();
+            const { data } = await supabaseClient.auth.getSession();
             if (data.session) {
                 currentUser = data.session.user;
-                updateUIForUser();
+                document.getElementById('btn-show-login').classList.add('hidden');
+                document.getElementById('user-info').classList.remove('hidden');
+                const nickname = '@' + currentUser.email.split('@')[0];
+                document.getElementById('user-email').innerText = nickname;
+                document.getElementById('login-overlay').classList.add('hidden');
+                document.getElementById('posting-as').innerText = `Đăng bài: ${nickname}`;
             } else {
                 currentUser = null;
-                updateUIForGuest();
+                document.getElementById('btn-show-login').classList.remove('hidden');
+                document.getElementById('user-info').classList.add('hidden');
+                document.getElementById('login-overlay').classList.remove('hidden');
             }
             fetchPosts();
         }
 
-        function updateUIForUser() {
-            document.getElementById('btn-show-login').classList.add('hidden');
-            document.getElementById('user-info').classList.remove('hidden');
-            const nickname = '@' + currentUser.email.split('@')[0];
-            document.getElementById('user-email').innerText = nickname;
-            
-            document.getElementById('login-overlay').classList.add('hidden');
-            document.getElementById('posting-as').innerText = `Đăng bài dưới tên: ${nickname}`;
-        }
-
-        function updateUIForGuest() {
-            document.getElementById('btn-show-login').classList.remove('hidden');
-            document.getElementById('user-info').classList.add('hidden');
-            document.getElementById('login-overlay').classList.remove('hidden');
-        }
-
-        // LOGIC AUTH MODAL
         function toggleAuthModal(show) {
             const modal = document.getElementById('auth-modal');
-            if(show) {
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-            } else {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-                document.getElementById('auth-error').classList.add('hidden');
-            }
+            show ? (modal.classList.remove('hidden'), modal.classList.add('flex')) : (modal.classList.add('hidden'), modal.classList.remove('flex'), document.getElementById('auth-error').classList.add('hidden'));
         }
 
         function switchAuthMode() {
             isLoginMode = !isLoginMode;
-            document.getElementById('auth-title').innerText = isLoginMode ? 'Đăng Nhập' : 'Tạo Tài Khoản Mới';
+            document.getElementById('auth-title').innerText = isLoginMode ? 'Đăng Nhập' : 'Tạo Tài Khoản';
             document.getElementById('btn-auth-action').innerText = isLoginMode ? 'Đăng Nhập' : 'Đăng Ký';
             document.getElementById('auth-switch-text').innerText = isLoginMode ? 'Chưa có tài khoản?' : 'Đã có tài khoản?';
             document.getElementById('auth-switch-btn').innerText = isLoginMode ? 'Đăng ký ngay' : 'Đăng nhập';
-            document.getElementById('auth-error').classList.add('hidden');
         }
 
         async function handleAuth() {
             const email = document.getElementById('auth-email').value;
             const pass = document.getElementById('auth-pass').value;
             const errorDiv = document.getElementById('auth-error');
+            if(!email || !pass) return errorDiv.innerText = "Vui lòng nhập đủ thông tin", errorDiv.classList.remove('hidden');
             
-            if(!email || !pass) {
-                errorDiv.innerText = "Vui lòng nhập đủ Email và Mật khẩu";
-                errorDiv.classList.remove('hidden');
-                return;
-            }
-
             document.getElementById('btn-auth-action').innerText = 'Đang xử lý...';
             errorDiv.classList.add('hidden');
 
-            let error = null;
-            if (isLoginMode) {
-                const res = await supabaseClient.auth.signInWithPassword({ email, password: pass });
-                error = res.error;
-            } else {
-                const res = await supabaseClient.auth.signUp({ email, password: pass });
-                error = res.error;
-            }
+            const { error } = isLoginMode 
+                ? await supabaseClient.auth.signInWithPassword({ email, password: pass })
+                : await supabaseClient.auth.signUp({ email, password: pass });
 
             if (error) {
                 errorDiv.innerText = error.message;
@@ -225,120 +276,106 @@
             }
         }
 
-        async function signOut() {
-            await supabaseClient.auth.signOut();
-            checkSession();
+        async function signOut() { await supabaseClient.auth.signOut(); checkSession(); }
+
+        // ----- TAB LOGIC -----
+        function switchTab(tabId) {
+            if(tabId === 'feed') {
+                document.getElementById('tab-feed').classList.replace('bg-transparent', 'bg-gray-700');
+                document.getElementById('tab-feed').classList.replace('text-gray-400', 'text-white');
+                document.getElementById('tab-rank').classList.replace('bg-gray-700', 'bg-transparent');
+                document.getElementById('tab-rank').classList.replace('text-white', 'text-gray-400');
+                document.getElementById('content-feed').classList.remove('hidden');
+                document.getElementById('content-rank').classList.add('hidden');
+            } else {
+                document.getElementById('tab-rank').classList.replace('bg-transparent', 'bg-gray-700');
+                document.getElementById('tab-rank').classList.replace('text-gray-400', 'text-white');
+                document.getElementById('tab-feed').classList.replace('bg-gray-700', 'bg-transparent');
+                document.getElementById('tab-feed').classList.replace('text-white', 'text-gray-400');
+                document.getElementById('content-rank').classList.remove('hidden');
+                document.getElementById('content-feed').classList.add('hidden');
+            }
         }
 
-        // TẢI BÀI VIẾT
+        // ----- DATA LOGIC (VỚI REALTIME) -----
         async function fetchPosts() {
-            const { data, error } = await supabaseClient
-                .from('posts')
-                .select('*')
-                .order('created_at', { ascending: false });
-            
+            const { data, error } = await supabaseClient.from('posts').select('*').order('created_at', { ascending: false });
             const container = document.getElementById('posts-container');
-            if (error) {
-                container.innerHTML = `<div class="text-center text-red-400 text-sm">Lỗi tải dữ liệu: ${error.message}</div>`;
-                return;
-            }
+            if (error) return container.innerHTML = `<div class="text-center text-red-400 text-sm">Lỗi: ${error.message}</div>`;
+            if (data.length === 0) return container.innerHTML = '<div class="text-center text-gray-500 text-sm mt-10">Chưa có nhận định nào.</div>';
+
             container.innerHTML = ''; 
-            if(data.length === 0) {
-                container.innerHTML = '<div class="text-center text-gray-500 text-sm mt-10">Chưa có nhận định nào.</div>';
-                return;
-            }
-
-            data.forEach(post => {
-                let forwardTestHtml = '';
-                if (post.entry) {
-                    let isLong = post.type === 'LONG';
-                    let typeColor = isLong ? 'border-blue-500' : 'border-red-500';
-                    let badgeColor = isLong ? 'bg-blue-900 text-blue-300' : 'bg-red-900 text-red-300';
-                    
-                    forwardTestHtml = `
-                    <div class="bg-gray-800 p-3 rounded text-sm border-l-4 ${typeColor} mt-3">
-                        <div class="font-bold text-gray-200 mb-1 flex items-center gap-2">
-                            <span class="px-2 py-0.5 rounded text-xs ${badgeColor}">${post.type}</span> 
-                            ${post.symbol}
-                        </div>
-                        <div class="grid grid-cols-3 gap-2 text-center text-xs mt-2">
-                            <div class="bg-gray-700 py-1.5 rounded">Entry<br><span class="font-bold text-white text-sm">${post.entry}</span></div>
-                            <div class="bg-gray-700 py-1.5 rounded">SL<br><span class="font-bold text-red-400 text-sm">${post.sl || '-'}</span></div>
-                            <div class="bg-gray-700 py-1.5 rounded">TP<br><span class="font-bold text-green-400 text-sm">${post.tp || '-'}</span></div>
-                        </div>
-                    </div>`;
-                }
-
-                const dateObj = new Date(post.created_at);
-                const timeStr = dateObj.toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'});
-                const dateStr = dateObj.toLocaleDateString('vi-VN');
-                
-                const postElement = document.createElement('div');
-                postElement.className = 'bg-gray-900 p-4 rounded-lg border border-gray-700 shadow-md';
-                postElement.innerHTML = `
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-sm font-bold text-blue-400">${post.author}</span>
-                        <span class="text-xs text-gray-500">${timeStr} - ${dateStr}</span>
-                    </div>
-                    <p class="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">${post.content}</p>
-                    ${forwardTestHtml}
-                `;
-                container.appendChild(postElement);
-            });
+            data.forEach(post => renderSinglePost(post, container));
         }
 
-        // ĐĂNG BÀI
-        async function submitPost() {
-            if (!currentUser) {
-                alert("Vui lòng đăng nhập!");
-                return;
+        function renderSinglePost(post, container) {
+            let forwardTestHtml = '';
+            if (post.entry) {
+                let isLong = post.type === 'LONG';
+                let typeColor = isLong ? 'border-blue-500' : 'border-red-500';
+                let badgeColor = isLong ? 'bg-blue-900 text-blue-300' : 'bg-red-900 text-red-300';
+                forwardTestHtml = `
+                <div class="bg-gray-800 p-2 rounded text-sm border-l-4 ${typeColor} mt-2">
+                    <div class="font-bold text-gray-200 mb-1 flex items-center gap-2">
+                        <span class="px-1.5 py-0.5 rounded text-[10px] ${badgeColor}">${post.type}</span> ${post.symbol}
+                    </div>
+                    <div class="grid grid-cols-3 gap-1 text-center text-xs mt-1">
+                        <div class="bg-gray-700 py-1 rounded">Entry<br><span class="font-bold text-white">${post.entry}</span></div>
+                        <div class="bg-gray-700 py-1 rounded">SL<br><span class="font-bold text-red-400">${post.sl || '-'}</span></div>
+                        <div class="bg-gray-700 py-1 rounded">TP<br><span class="font-bold text-green-400">${post.tp || '-'}</span></div>
+                    </div>
+                </div>`;
             }
-
-            const content = document.getElementById('input-content').value;
-            const btn = document.getElementById('btn-submit');
+            const dateObj = new Date(post.created_at);
+            const timeStr = dateObj.toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'});
             
-            if(!content.trim()) {
-                alert("Bạn chưa nhập nội dung phân tích!");
-                return;
-            }
+            const div = document.createElement('div');
+            div.className = 'bg-gray-900 p-3 rounded-lg border border-gray-700 shadow-sm';
+            div.innerHTML = `
+                <div class="flex justify-between items-center mb-1">
+                    <span class="text-sm font-bold text-blue-400">${post.author}</span>
+                    <span class="text-[10px] text-gray-500">${timeStr} - ${dateObj.toLocaleDateString('vi-VN')}</span>
+                </div>
+                <p class="text-xs text-gray-300 leading-relaxed whitespace-pre-wrap">${post.content}</p>
+                ${forwardTestHtml}
+            `;
+            container.appendChild(div);
+        }
 
-            const nickname = '@' + currentUser.email.split('@')[0];
-            const postData = {
-                author: nickname, 
-                content: content
-            };
+        async function submitPost() {
+            if (!currentUser) return alert("Vui lòng đăng nhập!");
+            const content = document.getElementById('input-content').value;
+            if(!content.trim()) return alert("Bạn chưa nhập nội dung!");
 
+            const btn = document.getElementById('btn-submit');
+            const postData = { author: '@' + currentUser.email.split('@')[0], content: content };
             const entryVal = document.getElementById('input-entry').value;
             if (entryVal) {
                 postData.symbol = document.getElementById('input-symbol').value;
                 postData.type = document.getElementById('input-type').value;
                 postData.entry = parseFloat(entryVal);
-                
-                let slVal = document.getElementById('input-sl').value;
-                if(slVal) postData.sl = parseFloat(slVal);
-                
-                let tpVal = document.getElementById('input-tp').value;
-                if(tpVal) postData.tp = parseFloat(tpVal);
+                let slVal = document.getElementById('input-sl').value; if(slVal) postData.sl = parseFloat(slVal);
+                let tpVal = document.getElementById('input-tp').value; if(tpVal) postData.tp = parseFloat(tpVal);
             }
 
-            btn.innerText = 'Đang đẩy...';
-            btn.disabled = true;
-
-            const { error } = await supabaseClient.from('posts').insert([postData]);
-
-            btn.innerText = 'ĐĂNG BÀI';
-            btn.disabled = false;
-
-            if (error) {
-                alert("Lỗi khi lưu dữ liệu: " + error.message);
-            } else {
-                document.getElementById('input-content').value = '';
-                document.getElementById('input-entry').value = '';
-                document.getElementById('input-sl').value = '';
-                document.getElementById('input-tp').value = '';
-                fetchPosts();
-            }
+            btn.innerText = 'Đang đẩy...'; btn.disabled = true;
+            await supabaseClient.from('posts').insert([postData]);
+            
+            btn.innerText = 'ĐĂNG BÀI'; btn.disabled = false;
+            document.getElementById('input-content').value = '';
+            document.getElementById('input-entry').value = '';
+            document.getElementById('input-sl').value = '';
+            document.getElementById('input-tp').value = '';
+            // Không cần gọi lại fetchPosts() vì Realtime sẽ tự động bắt sự kiện
         }
+
+        // KÍCH HOẠT REALTIME SUPABASE
+        const postsChannel = supabaseClient.channel('custom-all-channel')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, payload => {
+            // Khi có người đăng bài mới, tải lại danh sách ngay lập tức
+            fetchPosts();
+        })
+        .subscribe();
 
         window.onload = checkSession;
     </script>
